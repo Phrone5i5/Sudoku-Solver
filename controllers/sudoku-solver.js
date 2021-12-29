@@ -60,7 +60,6 @@ class SudokuSolver {
 
   checkRegionPlacement(puzzleString, row, column, value) {
     let result = false;
-    console.log('made it this far 1');
     let columnIndex = column - 1;
     // A modified of the previous getRowNumber function, specifcally for returning an index for one of three region rows
     const getRowNumber = (rowLetter) => {
@@ -90,14 +89,8 @@ class SudokuSolver {
       bottomCenter: { regionArr: [], rows: ['G', 'H', 'I'], columns: [4, 5, 6] },
       bottomRight: { regionArr: [], rows: ['G', 'H', 'I'], columns: [7, 8, 9] }
     };
-    console.log('made it this far 2');
-    // See below note, and then: Object.getOwnPropertyNames() is also not working, making me think the issue is with either the Object methods, or with Node's handling of them
-    console.log(Object.getOwnPropertyNames());
-    // Either Node.js or something else is having an issue with Object.keys(regions), as it does not display to console, and execution stops immediately after it's called.
-    regionKeys = Object.keys(regions);
-    console.log(Object.keys(regions));
+    let regionKeys = Object.keys(regions);
     regionKeys.forEach((key, current) => {
-      console.log('made it this far 3');
     	let currentIndex;
       switch (current) {
       	case 0 : currentIndex = 0; break;
@@ -115,24 +108,16 @@ class SudokuSolver {
         puzzleString.slice(currentIndex + 9, currentIndex + 12), // current region middle row
         puzzleString.slice(currentIndex + 18, currentIndex + 21) // current region bottom row
       );
-    });
-    console.log('made it this far 4');
-    
+    });    
     regionKeys.forEach(key => {
-      console.log('made it this far 5');
     	if (regions[key].rows.includes(row) && regions[key].columns.includes(column)) {
-        console.log('made it this far 6');
-        console.log(regions[key].regionArr);
-        console.log(regions[key].regionArr.filter(row => row.includes(String(value))));
         if (
           regions[key].regionArr[getRowNumber(row)][getColumnIndex(columnIndex)] == '.' && regions[key].regionArr.filter(row => row.includes(value)).length == 0
         ) {
-          console.log('made it this far 7');
-        result = true;
+          result = true;
         }      	
       }
     });
-    console.log('made it this far 8');
     return result;
   }
 
