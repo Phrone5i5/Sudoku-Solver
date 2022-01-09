@@ -1,39 +1,44 @@
-class SudokuSolver {
+const { header } = require('express/lib/request');
+const LinkedList = require('./doubly-circular-linked-list');
+const Node = LinkedList.Node;
+const DoublyLinkedList = LinkedList.DoublyLinkedList;
 
+class SudokuSolver {
   validate(puzzleString) {
     const areAllValid = (string) => {
       return string.match(/([1-9]|\.)/g).length == 81 ? true : false;
-    }
+    };
     if (!puzzleString) {
       return { valid: false, error: 'Required field missing' };
-    } else if (typeof puzzleString == 'string' && puzzleString.length == 81 && areAllValid(puzzleString)) {
+    } else if (
+      typeof puzzleString == 'string' &&
+      puzzleString.length == 81 &&
+      areAllValid(puzzleString)
+    ) {
       return { valid: true };
-    } else if (typeof puzzleString == 'string' && puzzleString.length == 81 && !areAllValid(puzzleString)) {
+    } else if (
+      typeof puzzleString == 'string' &&
+      puzzleString.length == 81 &&
+      !areAllValid(puzzleString)
+    ) {
       return { valid: false, error: 'Invalid characters in puzzle' };
     } else if (puzzleString.length != 81) {
-      return { valid: false, error: 'Expected puzzle to be 81 characters long' };
+      return {
+        valid: false,
+        error: 'Expected puzzle to be 81 characters long',
+      };
     } else {
-      return { valid: false, error: 'Puzzle cannot be solved'};
+      return { valid: false, error: 'Puzzle cannot be solved' };
     }
   }
 
   checkRowPlacement(puzzleString, row, column, value) {
     let columnIndex = column - 1; // make column allign with its on board space
-    let rows = {
-      A: '',
-      B: '',
-      C: '',
-      D: '',
-      E: '',
-      F: '',
-      G: '',
-      H: '',
-      I: ''
-    };
+    let rows = { A: '', B: '', C: '', D: '', E: '', F: '', G: '', H: '', I: '' };
     // Populating the rows object with the current values of each row
     let rowKeys = Object.keys(rows);
     rowKeys.forEach((key, current) => {
-      rows[key] = puzzleString.slice(current * 9, (current * 9) + 9);
+      rows[key] = puzzleString.slice(current * 9, current * 9 + 9);
     });
     // Test the validity of the row, column, and value inputs against the calculated rows
     return rows[row][columnIndex] == '.' && !rows[row].includes(value) ? true : false;
@@ -43,29 +48,32 @@ class SudokuSolver {
     // Function to convert input row letter to number for string indexing
     const getRowNumber = (rowLetter) => {
       return [ ['A', 0], ['B', 1], ['C', 2], ['D', 3], ['E', 4], ['F', 5], ['G', 6], ['H', 7], ['I', 8] ]
-             .filter(pair => pair[0] == rowLetter)[0][1];
-    }
+             .filter((pair) => pair[0] == rowLetter)[0][1];
+    };
     let columns = { 1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '', 9: '' };
     // Populating the columns object with the current values of each column
     let columnKeys = Object.keys(columns);
     columnKeys.forEach((key, outerIndex) => {
       let currentColumn = '';
       for (let innerIndex in columnKeys) {
-        currentColumn = currentColumn.concat(puzzleString[(innerIndex * 9) + outerIndex]);
+        currentColumn = currentColumn.concat(
+          puzzleString[innerIndex * 9 + outerIndex]
+        );
       }
       columns[outerIndex + 1] = currentColumn;
     });
-    return columns[column][getRowNumber(row)] == '.' && !columns[column].includes(value) ? true : false;
+    return columns[column][getRowNumber(row)] == '.' &&
+      !columns[column].includes(value) ? true : false;
   }
 
   checkRegionPlacement(puzzleString, row, column, value) {
-    let result = false;
+    let result = { region: '', valid: false };
     let columnIndex = column - 1;
     // A modified of the previous getRowNumber function, specifcally for returning an index for one of three region rows
     const getRowNumber = (rowLetter) => {
       return [ ['A', 0], ['B', 1], ['C', 2], ['D', 0], ['E', 1], ['F', 2], ['G', 0], ['H', 1], ['I', 2] ]
-             .filter(pair => pair[0] == rowLetter)[0][1];
-    }
+             .filter((pair) => pair[0] == rowLetter)[0][1];
+    };
     const getColumnIndex = (columnInput) => {
       let index;
       switch (columnInput) {
@@ -77,7 +85,7 @@ class SudokuSolver {
         case 5 || 8 : index = 2; break;
       }
       return index;
-    }
+    };
     const regions = {
       topLeft: { regionArr: [], rows: ['A', 'B', 'C'], columns: [1, 2, 3] },
       topCenter: { regionArr: [], rows: ['A', 'B', 'C'], columns: [4, 5, 6] },
@@ -87,35 +95,43 @@ class SudokuSolver {
       middleRight: { regionArr: [], rows: ['D', 'E', 'F'], columns: [7, 8, 9] },
       bottomLeft: { regionArr: [], rows: ['G', 'H', 'I'], columns: [1, 2, 3] },
       bottomCenter: { regionArr: [], rows: ['G', 'H', 'I'], columns: [4, 5, 6] },
-      bottomRight: { regionArr: [], rows: ['G', 'H', 'I'], columns: [7, 8, 9] }
+      bottomRight: { regionArr: [], rows: ['G', 'H', 'I'], columns: [7, 8, 9] },
     };
     let regionKeys = Object.keys(regions);
     regionKeys.forEach((key, current) => {
-    	let currentIndex;
+      let currentIndex;
       switch (current) {
-      	case 0 : currentIndex = 0; break;
-       	case 1 : currentIndex = 3; break;
+        case 0 : currentIndex = 0; break;
+        case 1 : currentIndex = 3; break;
         case 2 : currentIndex = 6; break;
         case 3 : currentIndex = 27; break;
-        case 4 : currentIndex = 30;	break;
-        case 5 : currentIndex = 33;	break;
+        case 4 : currentIndex = 30; break;
+        case 5 : currentIndex = 33; break;
         case 6 : currentIndex = 54; break;
         case 7 : currentIndex = 57; break;
         case 8 : currentIndex = 60; break;
       }
       regions[key].regionArr.push(
-      	puzzleString.slice(currentIndex, currentIndex + 3), // current region top row
+        puzzleString.slice(currentIndex, currentIndex + 3), // current region top row
         puzzleString.slice(currentIndex + 9, currentIndex + 12), // current region middle row
         puzzleString.slice(currentIndex + 18, currentIndex + 21) // current region bottom row
       );
-    });    
-    regionKeys.forEach(key => {
-    	if (regions[key].rows.includes(row) && regions[key].columns.includes(column)) {
+    });
+    regionKeys.forEach((key) => {
+      if (
+        regions[key].rows.includes(row) &&
+        regions[key].columns.includes(column)
+      ) {
+        result.region = key;
         if (
-          regions[key].regionArr[getRowNumber(row)][getColumnIndex(columnIndex)] == '.' && regions[key].regionArr.filter(row => row.includes(value)).length == 0
+          regions[key].regionArr[getRowNumber(row)][
+            getColumnIndex(columnIndex)
+          ] == '.' &&
+          regions[key].regionArr.filter((row) => row.includes(value)).length ==
+            0
         ) {
-          result = true;
-        }      	
+          result.valid = true;
+        }
       }
     });
     return result;
@@ -127,12 +143,16 @@ class SudokuSolver {
       return this.validate(puzzleString);
     }
 
-    let recursiveSolve = (currentPuzzleString) => {
-      
+    try {
+    let testList = new DoublyLinkedList('head');
+    testList.createSudokuMatrix(puzzleString);
+    } catch (e) {
+      console.log(e.message);
     }
-    return { solution: recursiveSolve(puzzleString) };
+
+    const DLXSolve = (currentPuzzleString) => {};
+    return { solution: DLXSolve(puzzleString) };
   }
 }
 
 module.exports = SudokuSolver;
-
