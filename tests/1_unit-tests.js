@@ -84,23 +84,23 @@ suite('UnitTests', () => {
     suite('Grid placement validation', () => {
         // write the unit test, make it fail, (you'll still get to see the useful console.log), and then go back to finish the function
         test('Logic handles a valid region (3x3 grid) placement', (done) => {
-            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'A', 2, 4),
+            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'A', 2, 4).valid,
                 true,
                 'region placement with valid co-ordinate and non-conflicting value should pass');
-            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'D', 3, 4),
+            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'D', 3, 4).valid,
                 true,
                 'region placement with valid co-ordinate and non-conflicting value should pass');
-            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'H', 2, 5),
+            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'H', 2, 5).valid,
                 true,
                 'region placement with valid co-ordinate and non-conflicting value should pass')
             done();
         });
 
         test('Logic handles an invalid region (3x3 grid) placement', (done) => {
-            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'C', 2, 2),
+            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'C', 2, 2).valid,
                 false,
                 'region placement with valid co-ordinate and non-conflicting value should pass');
-            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'H', 9, 4),
+            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'H', 9, 4).valid,
                 false,
                 'region placement with valid co-ordinate and non-conflicting value should pass');
             done();
