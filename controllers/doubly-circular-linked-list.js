@@ -41,9 +41,11 @@ class HeaderNode {
 
   forEachRow(callback) {
     let current = this.headRow;
+    let increment = 0;
     while (current && current != this) {
-      callback(current);
+      callback(current, increment);
       current = current.down;
+      increment++;
     }
   }
 }
@@ -76,6 +78,53 @@ class DoublyLinkedList {
     this._head = new HeaderNode(data);
     this._tail = this._head;
     this._head.left = this._head.right = this._head;
+  }
+
+  isValidPuzzle() {
+    let rows = this.getRowStrings();
+    let cols = this.getColStrings();
+    let regions = [this.getRegion(1, 'A').map(node => node.value), this.getRegion(4, 'A').map(node => node.value), this.getRegion(7, 'A').map(node => node.value),
+                        this.getRegion(1, 'D').map(node => node.value), this.getRegion(4, 'D').map(node => node.value), this.getRegion(7, 'D').map(node => node.value),
+                        this.getRegion(1, 'G').map(node => node.value), this.getRegion(4, 'G').map(node => node.value), this.getRegion(7, 'G').map(node => node.value)];
+    // Check rows for duplicates...
+    for (let row in rows) {
+      for (let char = 0; char < 9; char++) {
+        let charRegExp = new RegExp(`${rows[row][char] == '.' ? 'F' : rows[row][char]}`, 'g');
+        let matches = rows[row].match(charRegExp)
+        if (matches) {
+          if (matches.length > 1) {
+            return false;
+          }
+        }
+      }
+    }
+    // Check columns for duplicates...
+    for (let col in cols) {
+      for (let char = 0; char < 9; char++) {
+        let charRegExp = new RegExp(`${cols[col][char] == '.' ? 'F' : cols[col][char]}`, 'g');
+        let matches = cols[col].match(charRegExp)
+        if (matches) {
+          if (matches.length > 1) {
+            return false;
+          }
+        }
+      }
+    }
+    // Check regions for duplicates...
+    for (let region in regions) {
+
+      let currRegString = regions[region].join('')
+      for (let char = 0; char < 9; char++) {
+        let charRegExp = new RegExp(`${regions[region][char] == '.' ? 'F' : regions[region][char]}`, 'g');
+        let matches = currRegString.match(charRegExp);
+        if (matches) {
+          if (matches.length > 1) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
   getColById(colID) {
@@ -113,9 +162,11 @@ class DoublyLinkedList {
 
   forEachColumn(callback) {
     let current = this._head.right;
+    let increment = 0;
     while (current && current != this._head) {
-      callback(current);
+      callback(current, increment);
       current = current.right;
+      increment++;
     }
   }
 
@@ -123,7 +174,7 @@ class DoublyLinkedList {
     return this._head;
   }
 
-  createSudokuMatrix(puzzleString) {
+  createSudokuGrid(puzzleString) {
     // Array of row letters to assign
     const rowLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
     // Object to hold the column strings
@@ -175,15 +226,6 @@ class DoublyLinkedList {
         });
       }
     }
-
-    /* For logging the data input to every column and row, and making sure everything runs the correct nubmer of times
-    this.forEachColumn(column => {
-      console.log(column.data);
-      column.forEachRow(row => {
-        console.log(row.data);
-      });
-    });
-    */
     
     // Connect all of the rows generated under the columns to each other with left and right pointers
     this.forEachColumn(column => {
@@ -196,30 +238,92 @@ class DoublyLinkedList {
           if (rowLeft.rowID == row.rowID && rowRight.rowID == row.rowID) {
             row.left = rowLeft;
             row.right = rowRight;
-            //console.log('row:', row.data, 'L:', row.left.data, 'R:', row.right.data);
           }
           rowLeft = rowLeft.down;
           rowRight = rowRight.down;
         }
       });
     });
-    console.log(this.getHead().right.up);
+    return this;
   }
 
-  coverRow() {
-
+  getRowStrings() {
+    let resultArr = ['', '', '', '', '', '', '', '', ''];
+    this._head.right.forEachRow((row, i) => {
+      resultArr[i] += row.value;
+      let currRow = row.right;
+      while (currRow != row) {
+        resultArr[i] += currRow.value;
+        currRow = currRow.right;
+      }
+    });
+    return resultArr;
   }
 
-  coverCol() {
-
+  getColStrings() {
+    let resultArr = [];
+    this.forEachColumn(column => {
+      let colString = '';
+      column.forEachRow(row => {
+        colString += row.value;
+      });
+      resultArr.push(colString);
+    });
+    return resultArr;
   }
 
-  uncoverRow() {
-
+  getNodeAt(col, row) {
+    let foundNode = null;
+    this.forEachColumn(column => {
+      column.forEachRow(currRow => {
+        if (currRow.rowID == row && currRow.header == col) {
+          foundNode = currRow;
+        }
+      });
+    });
+    return foundNode;
   }
 
-  uncoverCol() {
-    
+  getRegion(col, row) {
+    let resultArr = [];
+    const regions = {
+      topLeft: { rows: ['A', 'B', 'C'], columns: [1, 2, 3] },
+      topCenter: { rows: ['A', 'B', 'C'], columns: [4, 5, 6] },
+      topRight: { rows: ['A', 'B', 'C'], columns: [7, 8, 9] },
+      middleLeft: { rows: ['D', 'E', 'F'], columns: [1, 2, 3] },
+      middleCenter: { rows: ['D', 'E', 'F'], columns: [4, 5, 6] },
+      middleRight: { rows: ['D', 'E', 'F'], columns: [7, 8, 9] },
+      bottomLeft: { rows: ['G', 'H', 'I'], columns: [1, 2, 3] },
+      bottomCenter: { rows: ['G', 'H', 'I'], columns: [4, 5, 6] },
+      bottomRight: { rows: ['G', 'H', 'I'], columns: [7, 8, 9] },
+    };
+    let nodeObj = (header, rowID, region, value, mutable) => {
+      let template = {
+        header,
+        rowID,
+        region,
+        value,
+        mutable
+      }
+      return template;
+    }
+    let regionKeys = Object.keys(regions);
+    let targetRegion;
+    regionKeys.forEach(key => {
+      if (
+        regions[key].rows.includes(row) && regions[key].columns.includes(col)
+      ) {
+        targetRegion = key;
+      }
+    });
+    let coordsArr = [regions[targetRegion].rows, regions[targetRegion].columns];
+    coordsArr[0].forEach((row, i) => {
+      for (let k = 0; k < 3; k++) {
+        let currNode = this.getNodeAt(coordsArr[1][k], coordsArr[0][i]);
+        resultArr.push(nodeObj(currNode.header, currNode.rowID, currNode.region, currNode.value, currNode.mutable));
+      }
+    });
+    return resultArr;
   }
 
 }
