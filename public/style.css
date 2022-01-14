@@ -1,10 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;300;500&family=Orbitron:wght@500&display=swap');
+
+body {
+  background-color:rgb(66, 30, 133);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+}
+
 code {
-  background: #d0d0d5;
+  padding: 5px;
+  font-size: 18px;
+  color: yellow;
+  background: #8d8d8d;
+}
+
+header {
+  text-align: center;
 }
 
 .container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+}
+
+#author {
+  margin-top: 50px;
+  text-align: center;
+  color: grey;
 }
 
 .form-container {
@@ -13,7 +35,43 @@ code {
 }
 
 textarea {
-  width: 100%;
+  padding: 5px;
+  resize: none;
+  width: 650px;
+  height: 20px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+#solve-button {
+  font-family: 'JetBrains Mono', monospace;
+  color: white;
+  background-color: rgb(55, 107, 218);
+  border: 2px solid darkgrey;
+  border-radius: 4px;
+}
+
+#check-button {
+  margin: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: white;
+  background-color: rgb(55, 107, 218);
+  border: 2px solid darkgrey;
+  border-radius: 4px;
+}
+
+#coord {
+  width: 20px;
+  padding: 5px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+#val {
+  width: 10px;
+  padding: 5px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 #user-stories {
@@ -27,18 +85,22 @@ textarea {
 }
 
 #sudoku-grid-container {
+  color:rgb(153, 58, 58);
   display: flex;
   flex-direction: row;
   margin-left: 20px;
 }
 
 #sudoku-grid {
+  color: rgb(169, 172, 15);
   text-align: center;
   display: inline;
 }
 
 .grid {
-  border: 3px solid;
+  color: white;
+  border: 3px solid grey;
+  border-color: grey;
   border-spacing: 0;
 }
 
@@ -79,7 +141,7 @@ td {
 }
 
 .sudoku-input {
-  border: 1px solid black;
+  border: 1px solid rgb(112, 112, 112);
   width: 2em;
   height: 2em;
   text-align: center;
