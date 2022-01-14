@@ -5,12 +5,12 @@ const DoublyLinkedList = LinkedList.DoublyLinkedList;
 
 class SudokuSolver {
   getRowNumber(rowLetter) {
-    return [ ['A', 0], ['B', 1], ['C', 2], ['D', 3], ['E', 4], ['F', 5], ['G', 6], ['H', 7], ['I', 8] ]
-    .filter((pair) => pair[0] == rowLetter)[0][1];
+    const rowPairs = [ ['A', 0], ['B', 1], ['C', 2], ['D', 3], ['E', 4], ['F', 5], ['G', 6], ['H', 7], ['I', 8] ];
+    let isValidLetter = rowPairs.filter(pair => pair[0] == rowLetter).length == 1 ? true : false;
+    return isValidLetter == true ? rowPairs.filter((pair) => pair[0] == rowLetter)[0][1] : null;
   }
 
   validate(puzzleString) {
-    console.log(puzzleString);
     // Basic length and character checking
     let hasValidLength = puzzleString.length == 81 ? true : false;
     let hasValidChars = puzzleString.match(/([1-9]|\.)/g).length == 81 ? true : false;
@@ -36,6 +36,9 @@ class SudokuSolver {
     let currSudokuGrid = new DoublyLinkedList('head');
     currSudokuGrid.createSudokuGrid(puzzleString);
     let rowsArr = currSudokuGrid.getRowStrings();
+    if (rowsArr[this.getRowNumber(row)][column - 1]  == value) {
+      return true;
+    }
     return rowsArr[this.getRowNumber(row)][column - 1] == '.' && !rowsArr[this.getRowNumber(row)].includes(value) ? true : false;
   }
 
@@ -43,6 +46,9 @@ class SudokuSolver {
     let currSudokuGrid = new DoublyLinkedList('head');
     currSudokuGrid.createSudokuGrid(puzzleString);
     let colsArr = currSudokuGrid.getColStrings();
+    if (colsArr[column -1][this.getRowNumber(row)] == value) {
+      return true;
+    }
     return colsArr[column - 1][this.getRowNumber(row)] == '.' && !colsArr[column - 1].includes(value) ? true : false;
   }
 
@@ -53,6 +59,9 @@ class SudokuSolver {
 
     let regionNodes = currSudokuGrid.getRegion(column, row);
     regionNodes.forEach(node => {
+      if (node.rowID == row && node.header == column && node.value == value) {
+        result = { valud: true };
+      }
       if (node.rowID == row && node.header == column) {
         result.region = node.region;
         if (node.value == '.' || node.mutable == true) {
