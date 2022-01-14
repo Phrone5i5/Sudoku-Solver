@@ -6,6 +6,15 @@ body {
   font-family: 'JetBrains Mono', monospace;
 }
 
+footer p {
+  text-align: center;
+}
+
+footer p a {
+  color: yellow;
+  text-decoration-color: black;
+}
+
 code {
   padding: 5px;
   font-size: 18px;
@@ -30,12 +39,8 @@ header {
 }
 
 #author a {
-<<<<<<< HEAD
   color: white;
   text-decoration-color: cyan;
-=======
-  text-decoration-color: white;
->>>>>>> 6934b309c1b21e266a562923095f2d0768b4f6f2
 }
 
 .form-container {
