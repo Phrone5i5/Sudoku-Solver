@@ -7,7 +7,7 @@ chai.use(chaiHttp);
 
 const invalidPuzzles = {
     invalidChars: '.-1--11..11..--- ... .-..--- 1.1.11--.-.1- .-11.--1 .---... -11-1.---  1  1-..--1',
-    invalidLength: '..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.'
+    invalidLength: '..63.12.7.2..5.....9..1..8.2.3674.3.7.2..9.47...8..1..16....926914.37.'
 }
 
 suite('Functional Tests', () => {
@@ -55,7 +55,7 @@ suite('Functional Tests', () => {
             .request(server)
             .post('/api/solve')
             .send({
-                puzzle: invalidPuzzles[0]
+                puzzle: '1-5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.'
             })
             .end((err, res) => {
                 if (err) {
@@ -74,7 +74,7 @@ suite('Functional Tests', () => {
             .request(server)
             .post('/api/solve')
             .send({
-                puzzle: invalidPuzzles[1]
+                puzzle: invalidPuzzles.invalidLength
             })
             .end((err, res) => {
                 if (err) {
@@ -133,8 +133,8 @@ suite('Functional Tests', () => {
             .post('/api/check')
             .send({
                 puzzle: '1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.',
-                coordinate: 'B2',
-                value: '3'
+                coordinate: 'A2',
+                value: '1'
             })
             .end((err, res) => {
                 if (err) {
@@ -143,7 +143,7 @@ suite('Functional Tests', () => {
                 let resObj = res.body;
                 assert.equal(res.status, 200, 'Response status should be 200');
                 assert.equal(resObj.valid, false, 'Invalid placement should return false');
-                assert.equal(resObj.conflict, ['row'], 'Invalid placement should return the conflicting area');
+                assert.include(resObj.conflict, 'row', 'Invalid placement should return the conflicting area');
                 done();
             });
     });
@@ -164,7 +164,8 @@ suite('Functional Tests', () => {
                 let resObj = res.body;
                 assert.equal(res.status, 200, 'Response status should be 200');
                 assert.equal(resObj.valid, false, 'Invalid placement should return false');
-                assert.equal(resObj.conflict, ['row', 'column'], 'Invalid placement should return the conflicting areas');
+                assert.include(resObj.conflict, 'row', 'Invalid placement should return the conflicting areas');
+                assert.include(resObj.conflict, 'column', 'Invalid placement should return the conflicting areas');
                 done();
             });
     });
@@ -185,7 +186,9 @@ suite('Functional Tests', () => {
                 let resObj = res.body;
                 assert.equal(res.status, 200, 'Response status should be 200');
                 assert.equal(resObj.valid, false, 'Invalid placement should return false');
-                assert.equal(resObj.conflict, ['row', 'column', 'region'], 'Invalid placement should return the conflicting areas');
+                assert.include(resObj.conflict, 'row', 'Invalid placement should return the conflicting areas');
+                assert.include(resObj.conflict, 'column', 'Invalid placement should return the conflicting areas');
+                assert.include(resObj.conflict, 'region', 'Invalid placement should return the conflicting areas');
                 done();
             });
     });
@@ -196,8 +199,7 @@ suite('Functional Tests', () => {
             .post('/api/check')
             .send({
                 puzzle: '1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.',
-                coordinate: 'A2',
-                value: '2'
+                coordinate: 'A2'
             })
             .end((err, res) => {
                 if (err) {
@@ -215,9 +217,9 @@ suite('Functional Tests', () => {
             .request(server)
             .post('/api/check')
             .send({
-                puzzle: '1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.',
-                coordinate: 'A2',
-                value: '2'
+                puzzle: '1.5..2.84..63.12.7.2..5-....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.',
+                coordinate: 'B2',
+                value: '4'
             })
             .end((err, res) => {
                 if (err) {
@@ -225,7 +227,7 @@ suite('Functional Tests', () => {
                 }
                 let resObj = res.body;
                 assert.equal(res.status, 200, 'Response status should be 200');
-                assert.equal(resObj.error, 'Invalid value', 'Invalid characters should return an error');
+                assert.equal(resObj.error, 'Invalid characters in puzzle', 'Invalid characters should return an error');
                 done();
             });
     });
@@ -235,7 +237,7 @@ suite('Functional Tests', () => {
             .request(server)
             .post('/api/check')
             .send({
-                puzzle: '1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.',
+                puzzle: '.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.',
                 coordinate: 'A2',
                 value: '2'
             })
@@ -256,7 +258,7 @@ suite('Functional Tests', () => {
             .post('/api/check')
             .send({
                 puzzle: '1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.',
-                coordinate: 'A2',
+                coordinate: 'L7',
                 value: '2'
             })
             .end((err, res) => {
@@ -277,7 +279,7 @@ suite('Functional Tests', () => {
             .send({
                 puzzle: '1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.',
                 coordinate: 'A2',
-                value: '2'
+                value: '29'
             })
             .end((err, res) => {
                 if (err) {
