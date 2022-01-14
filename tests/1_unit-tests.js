@@ -97,7 +97,7 @@ suite('UnitTests', () => {
         });
 
         test('Logic handles an invalid region (3x3 grid) placement', (done) => {
-            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'C', 2, 2).valid,
+            assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'C', 2, 3).valid,
                 false,
                 'region placement with valid co-ordinate and non-conflicting value should pass');
             assert.equal(solver.checkRegionPlacement('1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.', 'H', 9, 4).valid,
