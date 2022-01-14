@@ -29,6 +29,11 @@ header {
   color: grey;
 }
 
+#author a {
+  color: white;
+  text-decoration-color: cyan;
+}
+
 .form-container {
   max-width: 95%;
   align-self: flex-start;
